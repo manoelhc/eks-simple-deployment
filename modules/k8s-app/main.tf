@@ -63,12 +63,30 @@ resource "kubernetes_deployment" "app" {
           image = "${var.image}:${var.image_tag}"
           name  = var.name
           port { container_port = 80 }
+          env_from {
+            secret_ref {
+              name = local.st_consumer_name
+            }
+          }
         }
       }
     }
   }
   depends_on = ["kubernetes_namespace.app"]
 }
+
+resource "kubernetes_secret" "app" {
+  metadata {
+    name = var.name
+  }
+  data = {
+    WORDPRESS_DB_HOST     = data.aws_ssm_parameter.db-hostname.value
+    WORDPRESS_DB_USER     = data.aws_ssm_parameter.db-username.value
+    WORDPRESS_DB_PASSWORD = data.aws_ssm_parameter.db-password.value
+    WORDPRESS_DB_NAME     = data.aws_ssm_parameter.db-dbname.value
+  }
+}
+
 
 resource "kubernetes_horizontal_pod_autoscaler" "app" {
   metadata {
