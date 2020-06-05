@@ -1,7 +1,11 @@
-# IaC for K8s
+# My IaC for K8s
 
 ![Randy C. Bunney, Great Circle Photography](https://upload.wikimedia.org/wikipedia/commons/e/e5/Scross_helmsman.jpg "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
 _Kubernetes stands for "helmsman" or "pilot" or "governor" in Greek" - Randy C. Bunney, Great Circle Photography, from wikipedia.org - CC BY-SA 2.5_
+
+## Objective 
+
+Deploy a webapp (currently WordPress) easily and safely to a high-available K8s cluster.
 
 ## Motivation
 
