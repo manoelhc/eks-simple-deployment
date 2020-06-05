@@ -28,7 +28,7 @@ This is the current roadmap. It might change during the development.
 
 ## 10,000-foot view 
 
-_Note: This will be updated according the the project's progress!_
+_Note: This will be updated according to the the project's progress!_
 
 #### High-availability
 The main goal of this project it to deliver a basic high-available Wordpress webapp. It starts with 3 application pods distributed in 3 different availability zones. There are 2 auto-scaling mechanisms:
