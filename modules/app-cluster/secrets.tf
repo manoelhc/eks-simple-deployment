@@ -1,5 +1,5 @@
 resource "aws_ssm_parameter" "mysql-root-username" {
-  name        = "/${var.name}/${var.environment}/database/username/master"
+  name        = "/${var.name}/${var.environment}/database/root-username/master"
   description = "${var.name} ${var.environment}'s MySQL Username"
   type        = "SecureString"
   value       = "${base64sha256("${timestamp()}-root-username")}"
@@ -11,7 +11,7 @@ resource "aws_ssm_parameter" "mysql-root-username" {
 }
 
 resource "aws_ssm_parameter" "mysql-root-password" {
-  name        = "/${var.name}/${var.environment}/database/password/master"
+  name        = "/${var.name}/${var.environment}/database/root-password/master"
   description = "${var.name} ${var.environment}'s MySQL Password"
   type        = "SecureString"
   value       = "${base64sha256("${timestamp()}-root-password")}"
@@ -23,7 +23,7 @@ resource "aws_ssm_parameter" "mysql-root-password" {
 }
 
 resource "aws_ssm_parameter" "mysql-dbname" {
-  name        = "/${var.name}/${var.environment}/dbname/username/master"
+  name        = "/${var.name}/${var.environment}/database/dbname/master"
   description = "${var.name} ${var.environment}'s MySQL DB Name"
   type        = "SecureString"
   value       = "${base64sha256("${timestamp()}-root-dbname")}"
@@ -35,7 +35,7 @@ resource "aws_ssm_parameter" "mysql-dbname" {
 }
 
 resource "aws_ssm_parameter" "mysql-hostname" {
-  name        = "/${var.name}/${var.environment}/database/password/master"
+  name        = "/${var.name}/${var.environment}/database/hostname/master"
   description = "${var.name} ${var.environment}'s MySQL Password"
   type        = "SecureString"
   value       = aws_db_instance.this.endpoint
