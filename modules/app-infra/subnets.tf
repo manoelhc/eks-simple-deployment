@@ -3,14 +3,13 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  azs_count    = 3
-  cidr_newbits = 8
+  azs_count = 3
 }
 
 resource "aws_subnet" "public-ingress" {
   count             = local.azs_count
   vpc_id            = "${aws_vpc.this.id}"
-  cidr_block        = cidrsubnet(var.network_cidr_block, local.cidr_newbits, ((0 * local.azs_count) + count.index + var.subnet_start_at))
+  cidr_block        = cidrsubnet(var.network_cidr_block, var.subnet_cidr_newbits_start, ((0 * local.azs_count) + count.index + var.subnet_start_at))
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
@@ -22,7 +21,7 @@ resource "aws_subnet" "public-ingress" {
 resource "aws_subnet" "private-cache" {
   count             = local.azs_count
   vpc_id            = "${aws_vpc.this.id}"
-  cidr_block        = cidrsubnet(var.network_cidr_block, local.cidr_newbits, ((1 * local.azs_count) + count.index + var.subnet_start_at))
+  cidr_block        = cidrsubnet(var.network_cidr_block, var.subnet_cidr_newbits_start, ((1 * local.azs_count) + count.index + var.subnet_start_at))
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
@@ -34,7 +33,7 @@ resource "aws_subnet" "private-cache" {
 resource "aws_subnet" "private-data" {
   count             = local.azs_count
   vpc_id            = "${aws_vpc.this.id}"
-  cidr_block        = cidrsubnet(var.network_cidr_block, local.cidr_newbits, ((2 * local.azs_count) + count.index + var.subnet_start_at))
+  cidr_block        = cidrsubnet(var.network_cidr_block, var.subnet_cidr_newbits_start, ((2 * local.azs_count) + count.index + var.subnet_start_at))
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
@@ -46,7 +45,7 @@ resource "aws_subnet" "private-data" {
 resource "aws_subnet" "private-systems" {
   count             = local.azs_count
   vpc_id            = "${aws_vpc.this.id}"
-  cidr_block        = cidrsubnet(var.network_cidr_block, local.cidr_newbits, ((3 * local.azs_count) + count.index + var.subnet_start_at))
+  cidr_block        = cidrsubnet(var.network_cidr_block, var.subnet_cidr_newbits_start, ((3 * local.azs_count) + count.index + var.subnet_start_at))
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
@@ -58,7 +57,7 @@ resource "aws_subnet" "private-systems" {
 resource "aws_subnet" "private-app" {
   count             = local.azs_count
   vpc_id            = "${aws_vpc.this.id}"
-  cidr_block        = cidrsubnet(var.network_cidr_block, local.cidr_newbits, ((4 * local.azs_count) + count.index + var.subnet_start_at))
+  cidr_block        = cidrsubnet(var.network_cidr_block, var.subnet_cidr_newbits_start, ((4 * local.azs_count) + count.index + var.subnet_start_at))
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
