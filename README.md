@@ -63,7 +63,7 @@ $ git clone https://github.com/manoelhc/k8s-simple-deployment.git
 Run `make check` to run all the plans. Run `make all` to apply all the plans. Note: on `make all`, you need to approve the changes manually, by typing `yes`.
 
 * Known issue:
- `make check` throws error if you don't create the network first (app-infra module). Terraform tries to query the subnets with tag values. If they aren't created, it will return:
+ `make check` throws errors if you don't create the subnets first (app-infra module). Terraform tries to query the subnets with tag values. If they aren't created, it will return:
 
 ```
 Error: no matching subnet found
