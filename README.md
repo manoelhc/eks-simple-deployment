@@ -5,11 +5,11 @@ _Kubernetes stands for "helmsman" or "pilot" or "governor" in Greek" - Randy C. 
 
 ## Objective 
 
-Deploy a webapp (currently WordPress) easily and safely to a high-available K8s cluster.
+Deploy a webapp (currently Drupal) easily and safely to a high-available K8s cluster.
 
 ## Motivation
 
-This is a simple IaC prototype to deploy Wordpress to AWS EKS using Terraform. I started this project from scratch using the technologies I've been using ultimately. Why from scratch? It's simple: technology changes all the time, even tiny changes matter. This is the opportunity I have to explore new features and share my thoughts with you. So far, I'm focused on delivering the basic working IaC. It might change drastically during the course of the roadmap. Feel free to contribute, tell me your thoughts and open an issue.
+This is a simple IaC prototype to deploy Drupal to AWS EKS using Terraform. I started this project from scratch using the technologies I've been using ultimately. Why from scratch? It's simple: technology changes all the time, even tiny changes matter. This is the opportunity I have to explore new features and share my thoughts with you. So far, I'm focused on delivering the basic working IaC. It might change drastically during the course of the roadmap. Feel free to contribute, tell me your thoughts and open an issue.
 
 ## Roadmap
 
@@ -17,7 +17,7 @@ This is the current roadmap. It might change during the development.
 
  1. ~~Create a basic AWS Network Setup script~~
  1. ~~Create a basic AWS EKS Cluster with worker nodes script~~
- 1. ~~Create a basic Wordpress deployment script~~
+ 1. ~~Create a basic Drupal deployment script~~
  1. Support HELM Charts deployment
  1. Add metrics and monitoring services
  1. Add log management and analysis services
@@ -35,7 +35,7 @@ This is the current roadmap. It might change during the development.
 _Note: This will be updated according to the the project's progress!_
 
 #### High-availability
-The main goal of this project it to deliver a basic high-available Wordpress webapp. It starts with 3 pods (instances) distributed in 3 different availability zones. There are 2 auto-scaling mechanisms:
+The main goal of this project it to deliver a basic high-available Drupal webapp. It starts with 3 pods (instances) distributed in 3 different availability zones. There are 2 auto-scaling mechanisms:
  * EC2 Instance (increase resources capacity), provided by [EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html). It creates/registers/unregisters/terminates EC2 instances automatically, based on pods allocation. Capacity: _min=3 instances (1 per region), max=30 instances (10 per region)_
  * [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/): Auto scales the pod (application) according to the defined resources limits. If Pod's CPU usage is over 80%, HPA will allocate more pods in the cluster to attend the demand. When the web traffic cools down, HPA will rebalance the pods. Capacity: _min=2 replicas, max=20 replicas, pod_cpu_limit: 1 core, pod_mem_limit: 512mb_
 
@@ -46,7 +46,7 @@ The main goal of this project it to deliver a basic high-available Wordpress web
 Today, the project does:
  * Module `app-infra`: Network basics. Creates a VPC with 1 public subnet for ALB, 3 private subnets (for databases, eks worker nodes, systems __*__ and cache __*__ ) and 1 VPN gateway.
  * Module `app-cluster`: Basic EKS Cluster. Creates a EKS Cluster and a RDS instance with all credentials setup. It also setups your local kube config (I might rethink about this later).
- * Module `k8s-app`: Basic K8S deployment. Creates k8s objects (deployment, services, etc) for Wordpress.
+ * Module `k8s-app`: Basic K8S deployment. Creates k8s objects (deployment, services, etc) for Drupal.
 
 __*__ _: Not in use yet_
 
@@ -56,6 +56,7 @@ __*__ _: Not in use yet_
  * `AWS CLI ^1.17.9` - https://aws.amazon.com/cli/
  * `kubectl ^1.18.0` - https://kubernetes.io/docs/tasks/tools/install-kubectl/
  * `Helm ^3.2.2` - https://helm.sh/docs/intro/install/
+ * `GNU Make ^3.81` - https://www.gnu.org/software/make/
 
 ## How to deploy
 
