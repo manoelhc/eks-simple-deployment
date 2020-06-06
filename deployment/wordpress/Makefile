@@ -10,11 +10,11 @@ check-eks-cluster:
 	terraform init && \
 	terraform plan
 check-app:
-	cd app && \
+	cd apps && \
 	terraform init && \
 	terraform plan
 
-all: create-infra create-eks-cluster create-app
+create: create-infra create-eks-cluster create-app
 
 create-infra:
 	cd infra && \
@@ -25,6 +25,22 @@ create-eks-cluster:
 	terraform init && \
 	terraform apply
 create-app:
-	cd app && \
+	cd apps && \
 	terraform init && \
 	terraform apply
+
+
+destroy: destroy-app destroy-eks-cluster destroy-infra 
+
+destroy-infra:
+	cd infra && \
+	terraform init && \
+	terraform destroy
+destroy-eks-cluster:
+	cd eks-cluster && \
+	terraform init && \
+	terraform destroy
+destroy-app:
+	cd apps && \
+	terraform init && \
+	terraform destroy

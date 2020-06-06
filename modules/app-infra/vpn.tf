@@ -1,3 +1,4 @@
+/*
 resource "aws_vpn_gateway" "vpn_gateway" {
   vpc_id = "${aws_vpc.this.id}"
 }
@@ -14,3 +15,4 @@ resource "aws_vpn_connection" "main" {
   type                = "ipsec.1"
   static_routes_only  = true
 }
+*/

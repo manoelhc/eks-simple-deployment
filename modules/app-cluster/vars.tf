@@ -22,10 +22,3 @@ variable "max_nodes_per_region" {
 variable "eks_work_node_instance_types" {
   default = ["t3.medium"]
 }
-variable "mysql_engine" {
-  default = "5.7"
-}
-
-variable "db_instance_class" {
-  default = "db.t3.small"
-}

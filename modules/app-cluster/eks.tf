@@ -1,20 +1,9 @@
-resource "null_resource" "check-awscli" {
-  provisioner "local-exec" {
-    command = "aws eks --region ${var.region} list-clusters"
-  }
-}
-
-resource "null_resource" "check-kubectl" {
-  provisioner "local-exec" {
-    command = "kubectl"
-  }
-}
-
+/*
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/eks/${local.cluster_name}/cluster"
   retention_in_days = 7
 }
-
+*/
 resource "aws_eks_cluster" "this" {
   name                      = local.cluster_name
   role_arn                  = "${aws_iam_role.cluster.arn}"
@@ -29,9 +18,7 @@ resource "aws_eks_cluster" "this" {
   # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.
 
   depends_on = [
-    "null_resource.check-awscli",
-    "null_resource.check-kubectl",
-    "aws_cloudwatch_log_group.this",
+    // "aws_cloudwatch_log_group.this",
   ]
 }
 
@@ -55,11 +42,4 @@ resource "aws_eks_node_group" "this" {
   depends_on = [
     "aws_iam_role.node"
   ]
-}
-
-resource "null_resource" "setup-kubeconfig" {
-  depends_on = ["aws_eks_cluster.this", "null_resource.check-awscli"]
-  provisioner "local-exec" {
-    command = "aws eks --region ${var.region} update-kubeconfig --name ${local.cluster_name}"
-  }
 }

@@ -23,3 +23,15 @@ variable "filter_prefix" {
 }
 
 variable "region" {}
+
+variable "domain" {
+
+}
+
+variable "postgres_engine" {
+  default = "11"
+}
+
+variable "db_instance_class" {
+  default = "db.t3.small"
+}
