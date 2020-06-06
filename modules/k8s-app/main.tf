@@ -1,3 +1,27 @@
+locals {
+  app_subnet_ids  = data.aws_subnet_ids.private-apps.ids
+  data_subnet_ids = data.aws_subnet_ids.private-data.ids
+  cluster_name    = "${var.name}-${var.environment}"
+}
+
+data "aws_vpc" "vpc" {
+  tags = {
+    "${var.filter_prefix}/vpc" = var.environment
+  }
+}
+
+data "aws_subnet_ids" "private-apps" {
+  vpc_id = data.aws_vpc.vpc.id
+  tags = {
+    "${var.filter_prefix}/private-app-subnet" = var.environment
+  }
+}
+data "aws_subnet_ids" "private-data" {
+  vpc_id = data.aws_vpc.vpc.id
+  tags = {
+    "${var.filter_prefix}/private-data-subnet" = var.environment
+  }
+}
 
 resource "kubernetes_namespace" "app" {
   metadata {
@@ -28,17 +52,6 @@ resource "kubernetes_deployment" "app" {
   spec {
     replicas = 2
 
-    resources {
-      limits {
-        cpu    = "1"
-        memory = "512Mi"
-      }
-      requests {
-        cpu    = "250m"
-        memory = "150Mi"
-      }
-    }
-
     selector {
       match_labels = {
         app = var.name
@@ -59,13 +72,25 @@ resource "kubernetes_deployment" "app" {
       }
 
       spec {
+        /*
+        resources {
+          limits {
+            cpu    = "1"
+            memory = "512Mi"
+          }
+          requests {
+            cpu    = "250m"
+            memory = "150Mi"
+          }
+        }
+        */
         container {
           image = "${var.image}:${var.image_tag}"
           name  = var.name
           port { container_port = 80 }
           env_from {
             secret_ref {
-              name = local.st_consumer_name
+              name = var.name
             }
           }
         }
@@ -80,10 +105,10 @@ resource "kubernetes_secret" "app" {
     name = var.name
   }
   data = {
-    WORDPRESS_DB_HOST     = data.aws_ssm_parameter.db-hostname.value
-    WORDPRESS_DB_USER     = data.aws_ssm_parameter.db-username.value
-    WORDPRESS_DB_PASSWORD = data.aws_ssm_parameter.db-password.value
-    WORDPRESS_DB_NAME     = data.aws_ssm_parameter.db-dbname.value
+    DB_HOST           = aws_db_instance.this.endpoint
+    POSTGRES_USER     = data.aws_ssm_parameter.db-app-username.value
+    POSTGRES_PASSWORD = data.aws_ssm_parameter.db-app-password.value
+    POSTGRES_DB       = data.aws_ssm_parameter.db-dbname.value
   }
 }
 
@@ -121,6 +146,15 @@ resource "kubernetes_service" "app" {
 
 resource "kubernetes_ingress" "app" {
   metadata {
+    annotations = {
+      //"alb.ingress.kubernetes.io/backend-protocol" = "HTTPS"
+      //"alb.ingress.kubernetes.io/certificate-arn"  = "arn:aws:acm:region:client_id:certificate/cert_hash"
+      //"alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTPS\":443}]"
+      "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
+      "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\":80}]"
+      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
+      "kubernetes.io/ingress.class"                = "alb"
+    }
     name = var.name
   }
 
@@ -132,7 +166,7 @@ resource "kubernetes_ingress" "app" {
     }
 
     rule {
-      host = "host.myblog"
+      host = var.domain
       http {
         path {
           backend {

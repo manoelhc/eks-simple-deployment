@@ -1,27 +1,25 @@
-data "aws_subnet" "private-apps" {
-  filter {
-    name   = "tag:${var.filter_prefix}/private-app"
-    values = [var.environment]
-  }
-}
-data "aws_subnet" "private-data" {
-  filter {
-    name   = "tag:${var.filter_prefix}/private-data"
-    values = [var.environment]
-  }
-}
-
 locals {
-  app_subnet_ids  = [for s in data.aws_subnet.private-apps : s.id]
-  data_subnet_ids = [for s in data.aws_subnet.private-data : s.id]
+  app_subnet_ids  = data.aws_subnet_ids.private-apps.ids
+  data_subnet_ids = data.aws_subnet_ids.private-data.ids
   cluster_name    = "${var.name}-${var.environment}"
 }
 
-output "endpoint" {
-  value = "${aws_eks_cluster.this.endpoint}"
+data "aws_vpc" "vpc" {
+  tags = {
+    "${var.filter_prefix}/vpc" = var.environment
+  }
 }
 
-output "kubeconfig-certificate-authority-data" {
-  value = "${aws_eks_cluster.this.certificate_authority.0.data}"
+data "aws_subnet_ids" "private-apps" {
+  vpc_id = data.aws_vpc.vpc.id
+  tags = {
+    "${var.filter_prefix}/private-app-subnet" = var.environment
+  }
+}
+data "aws_subnet_ids" "private-data" {
+  vpc_id = data.aws_vpc.vpc.id
+  tags = {
+    "${var.filter_prefix}/private-data-subnet" = var.environment
+  }
 }
 
