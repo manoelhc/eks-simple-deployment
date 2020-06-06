@@ -26,3 +26,8 @@ variable "region" {
 
 }
 
+
+variable "domain" {
+
+}
+

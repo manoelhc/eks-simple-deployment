@@ -132,7 +132,7 @@ resource "kubernetes_ingress" "app" {
     }
 
     rule {
-      host = "host.myblog"
+      host = var.domain
       http {
         path {
           backend {
