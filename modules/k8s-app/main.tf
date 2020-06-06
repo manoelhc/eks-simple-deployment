@@ -121,6 +121,15 @@ resource "kubernetes_service" "app" {
 
 resource "kubernetes_ingress" "app" {
   metadata {
+    annotations = {
+      //"alb.ingress.kubernetes.io/backend-protocol" = "HTTPS"
+      //"alb.ingress.kubernetes.io/certificate-arn"  = "arn:aws:acm:region:client_id:certificate/cert_hash"
+      //"alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTPS\":443}]"
+      "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
+      "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\":80}]"
+      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
+      "kubernetes.io/ingress.class"                = "alb"
+    }
     name = var.name
   }
 
