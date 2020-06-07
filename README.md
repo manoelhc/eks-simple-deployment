@@ -35,7 +35,7 @@ This is the current roadmap. It might change during the development.
 _Note: This will be updated according to the the project's progress!_
 
 ### Architecture overview
-![Project's Diagram](pilot.svg "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
+![Project's Diagram](pilot.png "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
 
 #### High-availability
 The main goal of this project it to deliver a basic high-available Drupal webapp. It starts with 3 pods (instances) distributed in 3 different availability zones. There are 2 auto-scaling mechanisms:
