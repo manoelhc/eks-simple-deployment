@@ -1,9 +1,9 @@
-/*
+
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/eks/${local.cluster_name}/cluster"
   retention_in_days = 7
 }
-*/
+
 resource "aws_eks_cluster" "this" {
   name                      = local.cluster_name
   role_arn                  = "${aws_iam_role.cluster.arn}"
@@ -18,7 +18,7 @@ resource "aws_eks_cluster" "this" {
   # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.
 
   depends_on = [
-    // "aws_cloudwatch_log_group.this",
+    "aws_cloudwatch_log_group.this",
   ]
 }
 

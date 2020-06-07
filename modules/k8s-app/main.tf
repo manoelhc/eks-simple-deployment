@@ -72,18 +72,7 @@ resource "kubernetes_deployment" "app" {
       }
 
       spec {
-        /*
-        resources {
-          limits {
-            cpu    = "1"
-            memory = "512Mi"
-          }
-          requests {
-            cpu    = "250m"
-            memory = "150Mi"
-          }
-        }
-        */
+
         container {
           image = "${var.image}:${var.image_tag}"
           name  = var.name
@@ -91,6 +80,16 @@ resource "kubernetes_deployment" "app" {
           env_from {
             secret_ref {
               name = var.name
+            }
+          }
+          resources {
+            limits {
+              cpu    = "1"
+              memory = "512Mi"
+            }
+            requests {
+              cpu    = "250m"
+              memory = "150Mi"
             }
           }
         }
@@ -105,7 +104,7 @@ resource "kubernetes_secret" "app" {
     name = var.name
   }
   data = {
-    DB_HOST           = aws_db_instance.this.endpoint
+    #DB_HOST           = aws_db_instance.this.endpoint
     POSTGRES_USER     = data.aws_ssm_parameter.db-app-username.value
     POSTGRES_PASSWORD = data.aws_ssm_parameter.db-app-password.value
     POSTGRES_DB       = data.aws_ssm_parameter.db-dbname.value
