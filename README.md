@@ -11,7 +11,7 @@ Deploy a webapp (currently Drupal) easily and safely to a high-available K8s clu
 
 ## Motivation
 
-This is a simple IaC prototype to deploy Drupal to AWS EKS using Terraform. I started this project from scratch using the technologies I've been using ultimately. Why from scratch? It's simple: technology changes all the time, even tiny changes matter. This is the opportunity I have to explore new features and share my thoughts with you. So far, I'm focused on delivering a basic and working project. It might change drastically during the course of the roadmap. Feel free to contribute, tell me your thoughts and open an issue.
+This is a simple IaC prototype to deploy Drupal to AWS EKS using Terraform. I started this project from scratch using the technologies I've been using ultimately. Why from scratch? It's simple: technology changes all the time, even tiny changes matter. This is the opportunity I have to explore new features and share my thoughts with you. So far, I'm focused on delivering a basic and working project. It might change drastically during the course of the roadmap. Let me know your thoughts, feel free to contribute :)
 
 ## Roadmap
 
@@ -37,16 +37,15 @@ This is the current roadmap. It might change during the development.
 _Note: This will be updated according to the the project's progress!_
 
 ### Architecture overview
-![Project's Diagram](pilot.png "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
+![Project's Diagram](pilot.png "Project's Diagram")
 
 #### High-availability
-The main goal of this project it to deliver a basic high-available Drupal webapp. It starts with 2 pods per AZ (using 3 AZs). There are 2 auto-scaling mechanisms:
- * EC2 Instance (increase resources capacity), provided by [EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html). It creates/registers/unregisters/terminates EC2 instances automatically, based on pods allocation. Capacity: _min=3 instances (1 per AZ), max=30 instances (10 per region)_
- * [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/): Auto scales the pod (application) according to the defined resources limits. If Pod's CPU usage is over 80%, HPA will allocate more pods in the cluster to attend the demand. When the web traffic cools down, HPA will rebalance the pods. I might use another diagram tool to detail in the Architecture Overview. Capacity: _min=2 replicas, max=20 replicas, pod_cpu_limit: 1 core, pod_mem_limit: 512mb_ 
+The main goal of this project it to deliver a very basic high-available Drupal webapp. It starts with 2 pods per AZ (using 3 AZs). There are 2 auto-scaling mechanisms:
+ * EC2 Instance (provisioning resources), provided by [EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html). It creates/registers/unregisters/terminates EC2 instances automatically, based on pods allocation. Capacity: _min=3 instances (1 per AZ), max=30 instances (10 per region)_
+ * [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/): Auto scales pods (small application instances) according to the pod's resource settings. If Pod's CPU usage is over 80%, HPA will allocate more pods in the cluster to attend the demand. When the web traffic cools down, HPA will rebalance the pods. I might use another diagram tool to detail in the Architecture Overview section. Capacity: _min=2 replicas, max=20 replicas, pod_cpu_limit: 1 core, pod_mem_limit: 512mb_ 
 
 
 ## Current Terraform Pattern
-
 
 Today, the project has 3 modules:
  * Module `app-infra`: Network basics. Creates a VPC with 1 public subnet for ALB, 3 private subnets (for databases, eks worker nodes, systems __*__ and cache __*__ ) and 1 VPN gateway.
