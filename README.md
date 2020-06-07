@@ -63,7 +63,7 @@ __*__ _: Not in use yet_
 
 ## How to deploy
 
-Once all the dependencies are satisfied, clone the project:
+Once all the dependencies above are satisfied, clone the project:
 ```
 $ git clone https://github.com/manoelhc/k8s-simple-deployment.git
 ```
