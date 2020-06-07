@@ -46,7 +46,7 @@ The main goal of this project it to deliver a basic high-available Drupal webapp
 ## Current Terraform Pattern
 
 
-Today, the project does:
+Today, the project has 3 modules:
  * Module `app-infra`: Network basics. Creates a VPC with 1 public subnet for ALB, 3 private subnets (for databases, eks worker nodes, systems __*__ and cache __*__ ) and 1 VPN gateway.
  * Module `app-cluster`: Basic EKS Cluster. Creates a EKS Cluster and a RDS instance with all credentials setup. It also setups your local kube config (I might rethink about this later).
  * Module `k8s-app`: Basic K8S deployment. Creates k8s objects (deployment, services, etc) for Drupal.
