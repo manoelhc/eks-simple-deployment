@@ -34,6 +34,9 @@ This is the current roadmap. It might change during the development.
 
 _Note: This will be updated according to the the project's progress!_
 
+### Architecture overview
+![Project's Diagram](pilot.svg "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
+
 #### High-availability
 The main goal of this project it to deliver a basic high-available Drupal webapp. It starts with 3 pods (instances) distributed in 3 different availability zones. There are 2 auto-scaling mechanisms:
  * EC2 Instance (increase resources capacity), provided by [EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html). It creates/registers/unregisters/terminates EC2 instances automatically, based on pods allocation. Capacity: _min=3 instances (1 per region), max=30 instances (10 per region)_
