@@ -11,7 +11,7 @@ Deploy a webapp (currently Drupal) easily and safely to a high-available K8s clu
 
 ## Motivation
 
-This is a simple IaC prototype to deploy Drupal to AWS EKS using Terraform. I started this project from scratch using the technologies I've been using ultimately. Why from scratch? It's simple: technology changes all the time, even tiny changes matter. This is the opportunity I have to explore new features and share my thoughts with you. So far, I'm focused on delivering the basic working IaC. It might change drastically during the course of the roadmap. Feel free to contribute, tell me your thoughts and open an issue.
+This is a simple IaC prototype to deploy Drupal to AWS EKS using Terraform. I started this project from scratch using the technologies I've been using ultimately. Why from scratch? It's simple: technology changes all the time, even tiny changes matter. This is the opportunity I have to explore new features and share my thoughts with you. So far, I'm focused on delivering a basic and working project. It might change drastically during the course of the roadmap. Feel free to contribute, tell me your thoughts and open an issue.
 
 ## Roadmap
 
