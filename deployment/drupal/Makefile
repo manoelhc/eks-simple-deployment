@@ -35,12 +35,15 @@ destroy: destroy-app destroy-eks-cluster destroy-infra
 destroy-infra:
 	cd infra && \
 	terraform init && \
-	terraform destroy
+	terraform destroy && \
+	rm -f terraform.tfstate
 destroy-eks-cluster:
 	cd eks-cluster && \
 	terraform init && \
-	terraform destroy
+	terraform destroy && \
+	rm -f terraform.tfstate
 destroy-app:
 	cd apps && \
 	terraform init && \
-	terraform destroy
+	terraform destroy && \
+	rm -f terraform.tfstate
