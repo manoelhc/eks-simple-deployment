@@ -1,4 +1,6 @@
 all:
-	cd deployment/wordpress && make all
+	cd deployment/drupal && make create
 check:
-	cd deployment/wordpress && make check
+	cd deployment/drupal && make check
+destroy:
+	cd deployment/drupal && make destroy

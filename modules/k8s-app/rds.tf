@@ -15,8 +15,8 @@ resource "aws_db_instance" "this" {
   db_subnet_group_name    = aws_db_subnet_group.this.name
   instance_class          = var.db_instance_class
   name                    = local.cluster_name
-  username                = data.aws_ssm_parameter.db-root-username.value
-  password                = data.aws_ssm_parameter.db-root-password.value
+  username                = aws_ssm_parameter.db-root-username.value
+  password                = aws_ssm_parameter.db-root-password.value
   parameter_group_name    = "default.postgresql${var.postgres_engine}"
   backup_retention_period = 30
 }
@@ -24,25 +24,25 @@ resource "aws_db_instance" "this" {
 
 provider "postgresql" {
   host     = aws_db_instance.this.endpoint
-  username = data.aws_ssm_parameter.db-root-username.value
-  password = data.aws_ssm_parameter.db-root-password.value
+  username = aws_ssm_parameter.db-root-username.value
+  password = aws_ssm_parameter.db-root-password.value
   database = "postgres"
 }
 
 resource "postgresql_database" "app" {
-  name = data.aws_ssm_parameter.db-dbname.value
+  name = aws_ssm_parameter.db-dbname.value
 }
 
 
 resource "postgresql_role" "application_role" {
-  name     = data.aws_ssm_parameter.db-app-username.value
+  name     = aws_ssm_parameter.db-app-username.value
   login    = true
   password = data.aws_ssm_parameter.db-app-password.value
 }
 
 resource "postgresql_grant" "appuser" {
-  role        = data.aws_ssm_parameter.db-app-username.value
-  database    = data.aws_ssm_parameter.db-dbname.value
+  role        = aws_ssm_parameter.db-app-username.value
+  database    = aws_ssm_parameter.db-dbname.value
   schema      = "public"
   object_type = "table"
   privileges  = ["ALL"]
