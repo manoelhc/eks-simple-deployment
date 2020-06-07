@@ -14,7 +14,15 @@ resource "aws_eks_cluster" "this" {
     subnet_ids = local.app_subnet_ids
   }
 
+  # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.
+  # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.
+
   depends_on = [
+    "aws_iam_role_policy_attachment.AmazonEKSClusterPolicy",
+    "aws_iam_role_policy_attachment.AmazonEKSServicePolicy",
+    "aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy",
+    "aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy",
+    "aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly",
     "aws_cloudwatch_log_group.this",
   ]
 }
@@ -32,11 +40,4 @@ resource "aws_eks_node_group" "this" {
     min_size     = var.min_nodes_per_region
     max_size     = var.max_nodes_per_region
   }
-
-  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
-  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
-
-  depends_on = [
-    "aws_iam_role.node"
-  ]
 }
