@@ -1,7 +1,7 @@
 # My IaC for K8s
 
 ![Randy C. Bunney, Great Circle Photography](https://upload.wikimedia.org/wikipedia/commons/e/e5/Scross_helmsman.jpg "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
-_Kubernetes stands for "helmsman" or "pilot" or "governor" in Greek" - Randy C. Bunney, Great Circle Photography, from wikipedia.org - CC BY-SA 2.5_
+_Kubernetes means for "helmsman" or "pilot" or "governor" in Greek" - Randy C. Bunney, Great Circle Photography, from wikipedia.org - CC BY-SA 2.5_
 
 ## Objective 
 
