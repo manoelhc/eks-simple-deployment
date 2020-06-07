@@ -3,6 +3,8 @@
 ![Randy C. Bunney, Great Circle Photography](https://upload.wikimedia.org/wikipedia/commons/e/e5/Scross_helmsman.jpg "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
 _Kubernetes means for "helmsman" or "pilot" or "governor" in Greek" - Randy C. Bunney, Great Circle Photography, from wikipedia.org - CC BY-SA 2.5_
 
+If you have no idea about what Kubernetes (K8s) is, please visit: https://kubernetes.io/. In short, it's an open-source system for automating deployment, scaling, and management of containerized applications.
+
 ## Objective 
 
 Deploy a webapp (currently Drupal) easily and safely to a high-available K8s cluster.
