@@ -1,4 +1,4 @@
 all:
-	cd deployment/wordpress && make all
+	cd deployment/drupal && make all
 check:
-	cd deployment/wordpress && make check
+	cd deployment/drupal && make check
