@@ -21,7 +21,7 @@ resource "aws_db_instance" "this" {
   backup_retention_period = 30
 }
 
-/*
+
 provider "postgresql" {
   host     = aws_db_instance.this.endpoint
   username = data.aws_ssm_parameter.db-root-username.value
@@ -47,4 +47,4 @@ resource "postgresql_grant" "appuser" {
   object_type = "table"
   privileges  = ["ALL"]
 }
-*/
+
