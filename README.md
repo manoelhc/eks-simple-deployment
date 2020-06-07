@@ -39,7 +39,7 @@ _Note: This will be updated according to the the project's progress!_
 
 #### High-availability
 The main goal of this project it to deliver a basic high-available Drupal webapp. It starts with 2 pods per AZ (using 3 AZs). There are 2 auto-scaling mechanisms:
- * EC2 Instance (increase resources capacity), provided by [EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html). It creates/registers/unregisters/terminates EC2 instances automatically, based on pods allocation. Capacity: _min=3 instances (1 per region), max=30 instances (10 per region)_
+ * EC2 Instance (increase resources capacity), provided by [EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html). It creates/registers/unregisters/terminates EC2 instances automatically, based on pods allocation. Capacity: _min=3 instances (1 per AZ), max=30 instances (10 per region)_
  * [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/): Auto scales the pod (application) according to the defined resources limits. If Pod's CPU usage is over 80%, HPA will allocate more pods in the cluster to attend the demand. When the web traffic cools down, HPA will rebalance the pods. I might use another diagram tool to detail in the Architecture Overview. Capacity: _min=2 replicas, max=20 replicas, pod_cpu_limit: 1 core, pod_mem_limit: 512mb_ 
 
 
