@@ -43,7 +43,7 @@ The main goal of this project it to deliver a basic high-available Drupal webapp
  * [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/): Auto scales the pod (application) according to the defined resources limits. If Pod's CPU usage is over 80%, HPA will allocate more pods in the cluster to attend the demand. When the web traffic cools down, HPA will rebalance the pods. I might use another diagram tool to detail in the Architecture Overview. Capacity: _min=2 replicas, max=20 replicas, pod_cpu_limit: 1 core, pod_mem_limit: 512mb_ 
 
 
-## Current Project's Architecture
+## Current Terraform Pattern
 
 
 Today, the project does:
