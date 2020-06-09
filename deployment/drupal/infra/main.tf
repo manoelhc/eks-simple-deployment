@@ -11,7 +11,7 @@ module "infra" {
   filter_prefix             = local.filter_prefix
   name                      = "drupal-prod"
   environment               = local.environment
-  network_cidr_block        = "10.0.0.0/16"
+  network_cidr_block        = "10.1.0.0/16"
   subnet_cidr_newbits_start = "8"
   subnet_start_at           = "1"
   region                    = local.region
