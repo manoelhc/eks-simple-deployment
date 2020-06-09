@@ -1,5 +1,6 @@
+
 locals {
-  app_subnet_ids  = data.aws_subnet_ids.private-apps.ids
+  app_subnet_ids  = data.aws_subnet_ids.public-apps.ids
   data_subnet_ids = data.aws_subnet_ids.private-data.ids
   cluster_name    = "${var.name}-${var.environment}"
 }
@@ -10,10 +11,10 @@ data "aws_vpc" "vpc" {
   }
 }
 
-data "aws_subnet_ids" "private-apps" {
+data "aws_subnet_ids" "public-apps" {
   vpc_id = data.aws_vpc.vpc.id
   tags = {
-    "${var.filter_prefix}/private-app-subnet" = var.environment
+    "${var.filter_prefix}/public-app-subnet" = var.environment
   }
 }
 data "aws_subnet_ids" "private-data" {
@@ -34,6 +35,20 @@ resource "kubernetes_namespace" "app" {
     }
 
     name = var.namespace
+  }
+}
+
+resource "kubernetes_secret" "app" {
+  metadata {
+    name      = var.name
+    namespace = var.namespace
+  }
+  data = {
+    /*
+    DB_HOST           = aws_db_instance.this.endpoint
+    POSTGRES_USER     = aws_ssm_parameter.db-app-username.value
+    POSTGRES_PASSWORD = aws_ssm_parameter.db-app-password.value
+    POSTGRES_DB       = aws_ssm_parameter.db-dbname.value*/
   }
 }
 
@@ -96,25 +111,13 @@ resource "kubernetes_deployment" "app" {
       }
     }
   }
-  depends_on = ["kubernetes_namespace.app"]
+  depends_on = [kubernetes_namespace.app, kubernetes_secret.app]
 }
-
-resource "kubernetes_secret" "app" {
-  metadata {
-    name = var.name
-  }
-  data = {
-    #DB_HOST           = aws_db_instance.this.endpoint
-    POSTGRES_USER     = data.aws_ssm_parameter.db-app-username.value
-    POSTGRES_PASSWORD = data.aws_ssm_parameter.db-app-password.value
-    POSTGRES_DB       = data.aws_ssm_parameter.db-dbname.value
-  }
-}
-
 
 resource "kubernetes_horizontal_pod_autoscaler" "app" {
   metadata {
-    name = var.name
+    namespace = var.namespace
+    name      = var.name
   }
 
   spec {
@@ -130,7 +133,8 @@ resource "kubernetes_horizontal_pod_autoscaler" "app" {
 
 resource "kubernetes_service" "app" {
   metadata {
-    name = var.name
+    namespace = var.namespace
+    name      = var.name
   }
   spec {
     selector = {
@@ -143,8 +147,106 @@ resource "kubernetes_service" "app" {
   }
 }
 
+
+resource "kubernetes_cluster_role" "app" {
+  metadata {
+    labels = {
+      "app.kubernetes.io/name" = "alb-ingress-controller"
+    }
+    name = "alb-ingress-controller"
+  }
+
+  rule {
+    api_groups = ["", "extensions"]
+    resources  = ["configmaps", "endpoints", "events", "ingresses", "ingresses/status", "services"]
+    verbs      = ["create", "get", "list", "watch", "update", "patch"]
+  }
+
+  rule {
+    api_groups = ["", "extensions"]
+    resources  = ["nodes", "pods", "secrets", "services", "namespaces"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "app" {
+  metadata {
+    labels = {
+      "app.kubernetes.io/name" = "alb-ingress-controller"
+    }
+    name = "alb-ingress-controller"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "alb-ingress-controller"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "admin"
+    namespace = "kube-system"
+  }
+}
+
+data "aws_iam_role" "app" {
+  name = "${var.name}-${var.environment}-main-ingress-role"
+}
+
+resource "kubernetes_service_account" "app" {
+  automount_service_account_token = true
+  metadata {
+    labels = {
+      "app.kubernetes.io/name" = "alb-ingress-controller"
+    }
+    name      = "alb-ingress-controller"
+    namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = data.aws_iam_role.app.arn
+    }
+  }
+}
+
+resource "kubernetes_deployment" "ingress" {
+  metadata {
+    namespace = "kube-system"
+    name      = "alb-ingress-controller"
+    labels = {
+      "app.kubernetes.io/name" = "alb-ingress-controller"
+    }
+  }
+
+  spec {
+
+    selector {
+      match_labels = {
+        "app.kubernetes.io/name" = "alb-ingress-controller"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          "app.kubernetes.io/name" = "alb-ingress-controller"
+        }
+      }
+
+      spec {
+
+        container {
+          image = "docker.io/amazon/aws-alb-ingress-controller:v1.1.4"
+          name  = "alb-ingress-controller"
+          args  = ["--ingress-class=alb", "--cluster-name=${var.name}-${var.environment}", "--aws-vpc-id=${data.aws_vpc.vpc.id}", "--aws-region=${var.region}"]
+        }
+
+        service_account_name = "alb-ingress-controller"
+      }
+    }
+  }
+}
+
 resource "kubernetes_ingress" "app" {
   metadata {
+    namespace = var.namespace
     annotations = {
       //"alb.ingress.kubernetes.io/backend-protocol" = "HTTPS"
       //"alb.ingress.kubernetes.io/certificate-arn"  = "arn:aws:acm:region:client_id:certificate/cert_hash"
@@ -154,7 +256,7 @@ resource "kubernetes_ingress" "app" {
       "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
       "kubernetes.io/ingress.class"                = "alb"
     }
-    name = var.name
+    name = "alb-ingress-controller"
   }
 
   spec {
