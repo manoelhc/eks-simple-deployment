@@ -6,8 +6,8 @@ resource "aws_cloudwatch_log_group" "this" {
 
 resource "aws_eks_cluster" "this" {
   name                      = local.cluster_name
-  role_arn                  = "${aws_iam_role.cluster.arn}"
-  version                   = "1.16.8"
+  role_arn                  = aws_iam_role.cluster.arn
+  version                   = "1.16"
   enabled_cluster_log_types = ["api", "audit"]
 
   vpc_config {
@@ -18,12 +18,12 @@ resource "aws_eks_cluster" "this" {
   # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.
 
   depends_on = [
-    "aws_iam_role_policy_attachment.AmazonEKSClusterPolicy",
-    "aws_iam_role_policy_attachment.AmazonEKSServicePolicy",
-    "aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy",
-    "aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy",
-    "aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly",
-    "aws_cloudwatch_log_group.this",
+    aws_iam_role_policy_attachment.AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.AmazonEKSServicePolicy,
+    aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
+    aws_cloudwatch_log_group.this,
   ]
 }
 
