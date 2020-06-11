@@ -51,6 +51,7 @@ Today, the project has 3 modules:
  * Module `app-infra`: Network basics. Creates a VPC with 1 public subnet for ALB, 3 private subnets (for databases, eks worker nodes, systems __*__ and cache __*__ ) and 1 VPN gateway.
  * Module `app-cluster`: Basic EKS Cluster. Creates a EKS Cluster and a RDS instance with all credentials setup. It also setups your local kube config (I might rethink about this later).
  * Module `k8s-app`: Basic Kubernetes deployment. Creates k8s objects (deployment, services, etc) for Drupal.
+ * Module `k8s-services`: Basic services like ingress.
 
 __*__ _: Not in use yet_
 
@@ -69,11 +70,16 @@ Once all the dependencies above are satisfied, clone the project:
 $ git clone https://github.com/manoelhc/k8s-simple-deployment.git
 ```
 
-Run `make check` to run all the plans. Run `make all` to apply all the plans. Note: on `make all`, you need to approve the changes manually, by typing `yes`.
+Run `make check` to run all the plans. Run `make all` to apply all the plans. Note: on `make all` has auto-approve flag.
 
-* Known issue:
- `make check` throws errors if you don't create the subnets first (app-infra module). Terraform tries to query the subnets with tag values. If they aren't created, it will return:
+#### Testing
 
+After deployment the application, check the ingress Load Balancer Address by running `kk get services -n drupal`. You might get something like:
 ```
-Error: no matching subnet found
+$ kubectl get services -n drupal
+NAME     TYPE           CLUSTER-IP     EXTERNAL-IP                                                               PORT(S)        AGE
+drupal   LoadBalancer   172.20.19.97   a258ae76e7fa246deaa8832f1asd1235-1307389120.us-east-1.elb.amazonaws.com   80:30460/TCP   21m
 ```
+And then run `curl -H 'HOST:drupal.aws' http://<EXTERNAL-IP value>`
+
+* Note: This example doesn't create Route 53 RecordSets.

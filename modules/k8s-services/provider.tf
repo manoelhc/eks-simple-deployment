@@ -6,3 +6,7 @@ data "aws_eks_cluster" "app" {
 provider "kubernetes" {
   config_context_cluster = data.aws_eks_cluster.app.arn
 }
+
+provider "helm" {
+
+}

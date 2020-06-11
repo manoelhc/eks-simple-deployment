@@ -7,7 +7,7 @@ provider "helm" {
 }
 
 provider "kubernetes" {
-  config_context = "wordpress-prod"
+  config_context = "drupal-prod"
 }
 provider "aws" {
   region = "us-east-1"
