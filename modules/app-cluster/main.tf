@@ -33,4 +33,4 @@ resource "null_resource" "setup-kubeconfig" {
     command = "kubectl config delete-context ${local.cluster_name}"
   }
 }
-  
+

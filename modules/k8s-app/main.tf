@@ -26,10 +26,6 @@ data "aws_subnet_ids" "private-data" {
 
 resource "kubernetes_namespace" "app" {
   metadata {
-    annotations = {
-      name = "${var.namespace}-${var.environment}"
-    }
-
     labels = {
       "istio-injection" = "enabled"
     }
@@ -44,21 +40,17 @@ resource "kubernetes_secret" "app" {
     namespace = var.namespace
   }
   data = {
-    /*
     DB_HOST           = aws_db_instance.this.endpoint
     POSTGRES_USER     = aws_ssm_parameter.db-app-username.value
     POSTGRES_PASSWORD = aws_ssm_parameter.db-app-password.value
-    POSTGRES_DB       = aws_ssm_parameter.db-dbname.value*/
+    POSTGRES_DB       = aws_ssm_parameter.db-dbname.value
   }
 }
 
 resource "kubernetes_deployment" "app" {
   metadata {
     namespace = var.namespace
-    annotations = {
-      created = "${timestamp()}"
-    }
-    name = var.name
+    name      = var.name
     labels = {
       app = var.name
     }
@@ -76,10 +68,9 @@ resource "kubernetes_deployment" "app" {
     template {
       metadata {
         annotations = {
-          "prometheus.io/scrape"      = "true"
-          "prometheus.io/path"        = "/metrics"
-          "prometheus.io/port"        = "8080"
-          "${var.name}/last-deployed" = "${timestamp()}"
+          "prometheus.io/scrape" = "true"
+          "prometheus.io/path"   = "/metrics"
+          "prometheus.io/port"   = "8080"
         }
         labels = {
           app = var.name
@@ -91,7 +82,9 @@ resource "kubernetes_deployment" "app" {
         container {
           image = "${var.image}:${var.image_tag}"
           name  = var.name
-          port { container_port = 80 }
+          port {
+            container_port = 80
+          }
           env_from {
             secret_ref {
               name = var.name
@@ -111,7 +104,7 @@ resource "kubernetes_deployment" "app" {
       }
     }
   }
-  depends_on = [kubernetes_namespace.app, kubernetes_secret.app]
+  depends_on = [kubernetes_namespace.app, kubernetes_secret.app, aws_db_instance.this]
 }
 
 resource "kubernetes_horizontal_pod_autoscaler" "app" {
@@ -129,6 +122,7 @@ resource "kubernetes_horizontal_pod_autoscaler" "app" {
       name = var.name
     }
   }
+  depends_on = [kubernetes_deployment.app]
 }
 
 resource "kubernetes_service" "app" {
@@ -138,149 +132,47 @@ resource "kubernetes_service" "app" {
   }
   spec {
     selector = {
-      App = kubernetes_deployment.app.spec.0.template.0.metadata[0].labels.app
+      app = var.name
     }
     port {
       port        = 80
       target_port = 80
+      protocol    = "TCP"
     }
+    type = "LoadBalancer"
   }
+
+  depends_on = [kubernetes_deployment.app]
 }
 
 
-resource "kubernetes_cluster_role" "app" {
-  metadata {
-    labels = {
-      "app.kubernetes.io/name" = "alb-ingress-controller"
-    }
-    name = "alb-ingress-controller"
-  }
-
-  rule {
-    api_groups = ["", "extensions"]
-    resources  = ["configmaps", "endpoints", "events", "ingresses", "ingresses/status", "services"]
-    verbs      = ["create", "get", "list", "watch", "update", "patch"]
-  }
-
-  rule {
-    api_groups = ["", "extensions"]
-    resources  = ["nodes", "pods", "secrets", "services", "namespaces"]
-    verbs      = ["get", "list", "watch"]
-  }
-}
-
-resource "kubernetes_cluster_role_binding" "app" {
-  metadata {
-    labels = {
-      "app.kubernetes.io/name" = "alb-ingress-controller"
-    }
-    name = "alb-ingress-controller"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "alb-ingress-controller"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "admin"
-    namespace = "kube-system"
-  }
-}
-
-data "aws_iam_role" "app" {
-  name = "${var.name}-${var.environment}-main-ingress-role"
-}
-
-resource "kubernetes_service_account" "app" {
-  automount_service_account_token = true
-  metadata {
-    labels = {
-      "app.kubernetes.io/name" = "alb-ingress-controller"
-    }
-    name      = "alb-ingress-controller"
-    namespace = "kube-system"
-    annotations = {
-      "eks.amazonaws.com/role-arn" = data.aws_iam_role.app.arn
-    }
-  }
-}
-
-resource "kubernetes_deployment" "ingress" {
-  metadata {
-    namespace = "kube-system"
-    name      = "alb-ingress-controller"
-    labels = {
-      "app.kubernetes.io/name" = "alb-ingress-controller"
-    }
-  }
-
-  spec {
-
-    selector {
-      match_labels = {
-        "app.kubernetes.io/name" = "alb-ingress-controller"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          "app.kubernetes.io/name" = "alb-ingress-controller"
-        }
-      }
-
-      spec {
-
-        container {
-          image = "docker.io/amazon/aws-alb-ingress-controller:v1.1.4"
-          name  = "alb-ingress-controller"
-          args  = ["--ingress-class=alb", "--cluster-name=${var.name}-${var.environment}", "--aws-vpc-id=${data.aws_vpc.vpc.id}", "--aws-region=${var.region}"]
-        }
-
-        service_account_name = "alb-ingress-controller"
-      }
-    }
-  }
-}
-
-resource "kubernetes_ingress" "app" {
+resource "kubernetes_ingress" "ingress" {
   metadata {
     namespace = var.namespace
+    name      = var.name
     annotations = {
-      //"alb.ingress.kubernetes.io/backend-protocol" = "HTTPS"
-      //"alb.ingress.kubernetes.io/certificate-arn"  = "arn:aws:acm:region:client_id:certificate/cert_hash"
-      //"alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTPS\":443}]"
-      "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
-      "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\":80}]"
-      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-      "kubernetes.io/ingress.class"                = "alb"
+      "alb.ingress.kubernetes.io/scheme"      = "internet-facing"
+      "kubernetes.io/ingress.class"           = "alb"
+      "alb.ingress.kubernetes.io/target-type" = "ip"
     }
-    name = "alb-ingress-controller"
+
+    labels = {
+      app = "${var.name}-ingress"
+    }
   }
-
   spec {
-
-    backend {
-      service_name = var.name
-      service_port = 80
-    }
-
     rule {
       host = var.domain
       http {
         path {
+          path = "/*"
           backend {
             service_name = var.name
             service_port = 80
           }
-          path = "/"
         }
       }
     }
-    tls {
-      secret_name = "tls-secret"
-    }
   }
+  depends_on = [kubernetes_deployment.app]
 }
-

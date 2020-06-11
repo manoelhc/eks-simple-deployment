@@ -8,19 +8,19 @@ resource "aws_db_subnet_group" "this" {
 }
 
 resource "aws_db_instance" "this" {
-  allocated_storage       = 20
-  storage_type            = "gp2"
-  engine                  = "postgres"
-  engine_version          = var.postgres_engine
-  db_subnet_group_name    = aws_db_subnet_group.this.name
-  instance_class          = var.db_instance_class
-  name                    = var.name
-  identifier              = "${var.name}-${var.environment}"
-  username                = aws_ssm_parameter.db-root-username.value
-  password                = aws_ssm_parameter.db-root-password.value
-  parameter_group_name    = "default.postgres${var.postgres_engine}"
-  backup_retention_period = 30
-  //multi_az                  = true
+  allocated_storage         = 20
+  storage_type              = "gp2"
+  engine                    = "postgres"
+  engine_version            = var.postgres_engine
+  db_subnet_group_name      = aws_db_subnet_group.this.name
+  instance_class            = var.db_instance_class
+  name                      = var.name
+  identifier                = "${var.name}-${var.environment}"
+  username                  = aws_ssm_parameter.db-root-username.value
+  password                  = aws_ssm_parameter.db-root-password.value
+  parameter_group_name      = "default.postgres${var.postgres_engine}"
+  backup_retention_period   = 30
+  multi_az                  = true
   final_snapshot_identifier = "${var.name}-final-snapshot-${random_string.db-final-snapshot.result}"
 }
 

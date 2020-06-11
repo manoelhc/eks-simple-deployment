@@ -66,5 +66,6 @@ resource "aws_subnet" "public-app" {
     Name                                     = "EKS-Public-App-Subnet-${var.name}"
     "${var.filter_prefix}/public-app-subnet" = var.environment
     "kubernetes.io/cluster/${var.name}"      = "shared"
+    "kubernetes.io/role/elb"                 = 1
   }
 }

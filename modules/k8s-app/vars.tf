@@ -25,7 +25,7 @@ variable "filter_prefix" {
 variable "region" {}
 
 variable "domain" {
-
+  default = "drupal.aws"
 }
 
 variable "postgres_engine" {
