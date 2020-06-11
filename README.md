@@ -70,7 +70,7 @@ Once all the dependencies above are satisfied, clone the project:
 $ git clone https://github.com/manoelhc/k8s-simple-deployment.git
 ```
 
-Run `make check` to run all the plans. Run `make all` to apply all the plans. Note: on `make all` has auto-approve flag.
+Run `make check` to run all the plans. Run `make all` to apply all the plans. Note: `make all` has auto-approve flag.
 
 #### Testing
 
