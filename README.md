@@ -40,7 +40,6 @@ This is the current roadmap. It might change during the development.
 _Note: This will be updated according to the the project's progress!_
 
 ### Architecture overview
-![Project's Diagram](pilot.png "Project's Diagram")
 
 #### High-availability
 The main goal of this project is to deliver a very basic high-available Drupal webapp. It starts with 2 pods per AZ (using 3 AZs). There are 2 auto-scaling mechanisms:
