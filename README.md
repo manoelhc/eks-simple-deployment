@@ -1,6 +1,6 @@
 # My IaC for K8s
 
-> **_NOTE:_** This project is being designed to work with terraform 0.13.x features and no longer works with 0.12.x
+> **_NOTE:_** This project is being designed to work with terraform 0.13.x features and it may not work with 0.12.x
 
 
 ![Randy C. Bunney, Great Circle Photography](https://upload.wikimedia.org/wikipedia/commons/e/e5/Scross_helmsman.jpg "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
