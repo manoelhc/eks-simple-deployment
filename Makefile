@@ -1,5 +1,5 @@
 all:
-	cd deployment/drupal && make create
+	cd deployment/drupal && terraform_0.13.0_beta init && terraform_0.13.0_beta plan
 	kubectl cluster-info
 	kubectl get all
 check:
