@@ -1,5 +1,8 @@
 # My IaC for K8s
 
+> **_NOTE:_** This project is being designed to work with terraform 0.13.x features and it may not work with 0.12.x
+
+
 ![Randy C. Bunney, Great Circle Photography](https://upload.wikimedia.org/wikipedia/commons/e/e5/Scross_helmsman.jpg "Kubernetes stands for 'helmsman' or 'pilot' or 'governor' in Greek")
 _Kubernetes means for "helmsman" or "pilot" or "governor" in Greek" - Randy C. Bunney, Great Circle Photography, from wikipedia.org - CC BY-SA 2.5_
 
@@ -37,7 +40,6 @@ This is the current roadmap. It might change during the development.
 _Note: This will be updated according to the the project's progress!_
 
 ### Architecture overview
-![Project's Diagram](pilot.png "Project's Diagram")
 
 #### High-availability
 The main goal of this project is to deliver a very basic high-available Drupal webapp. It starts with 2 pods per AZ (using 3 AZs). There are 2 auto-scaling mechanisms:
@@ -57,7 +59,7 @@ __*__ _: Not in use yet_
 
 ## Dependencies
 
- * `Terraform ^0.12.26` - https://www.terraform.io/downloads.html
+ * `Terraform ^0.13.0beta1` - https://www.terraform.io/downloads.html
  * `AWS CLI ^1.17.9` - https://aws.amazon.com/cli/
  * `kubectl ^1.18.0` - https://kubernetes.io/docs/tasks/tools/install-kubectl/
  * `Helm ^3.2.2` - https://helm.sh/docs/intro/install/
